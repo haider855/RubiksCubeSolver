@@ -68,6 +68,15 @@ export const MIDDLE_LAYER_EDGE_TARGETS: StickerTarget[][] = [
   ],
 ];
 
+export const YELLOW_CROSS_TARGETS: StickerTarget[] = [
+  { face: "D", index: 1, colour: "yellow" },
+  { face: "D", index: 3, colour: "yellow" },
+  { face: "D", index: 5, colour: "yellow" },
+  { face: "D", index: 7, colour: "yellow" },
+];
+
+export type YellowCrossCase = "dot" | "l-shape" | "line" | "cross" | "invalid";
+
 export function isWhiteCrossSolved(cube: CubeState): boolean {
   return WHITE_CROSS_TARGETS.every((target) =>
     isWhiteCrossEdgeSolved(cube, target.sideFace),
@@ -127,6 +136,36 @@ export function isMiddleLayerEdgeSolved(
   }
 
   return isStickerTargetGroupSolved(cube, target);
+}
+
+export function isYellowCrossSolved(cube: CubeState): boolean {
+  return (
+    isMiddleLayerSolved(cube) &&
+    isStickerTargetGroupSolved(cube, YELLOW_CROSS_TARGETS)
+  );
+}
+
+export function getYellowCrossCase(cube: CubeState): YellowCrossCase {
+  const yellowEdges = YELLOW_CROSS_TARGETS.map(
+    (target) => cube[target.face][target.index] === target.colour,
+  );
+  const yellowEdgeCount = yellowEdges.filter(Boolean).length;
+
+  if (yellowEdgeCount === 4) {
+    return "cross";
+  }
+
+  if (yellowEdgeCount === 0) {
+    return "dot";
+  }
+
+  if (yellowEdgeCount === 2) {
+    const [front, left, right, back] = yellowEdges;
+
+    return (front && back) || (left && right) ? "line" : "l-shape";
+  }
+
+  return "invalid";
 }
 
 export function isWhiteCornerSolved(cube: CubeState, cornerIndex: number): boolean {
