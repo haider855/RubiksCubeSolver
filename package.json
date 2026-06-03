@@ -11,7 +11,8 @@
     "verify:cube": "tsc -p tsconfig.verify.json && node .verify-dist/tests/cubeEngineVerification.js",
     "verify:validation": "tsc -p tsconfig.verify.json && node .verify-dist/tests/validationVerification.js",
     "verify:white-cross": "tsc -p tsconfig.verify.json && node .verify-dist/tests/whiteCrossVerification.js",
-    "verify:white-corners": "tsc -p tsconfig.verify.json && node .verify-dist/tests/whiteCornersVerification.js"
+    "verify:white-corners": "tsc -p tsconfig.verify.json && node .verify-dist/tests/whiteCornersVerification.js",
+    "verify:middle-layer": "tsc -p tsconfig.verify.json && node .verify-dist/tests/middleLayerVerification.js"
   },
   "dependencies": {
     "react": "^19.2.7",
