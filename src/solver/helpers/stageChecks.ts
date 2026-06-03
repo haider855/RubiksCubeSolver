@@ -44,6 +44,30 @@ export const WHITE_CORNER_TARGETS: StickerTarget[][] = [
   ],
 ];
 
+export const FIRST_LAYER_TARGETS: StickerTarget[] = [
+  ...getWhiteCrossStickerTargets(),
+  ...WHITE_CORNER_TARGETS.flat(),
+];
+
+export const MIDDLE_LAYER_EDGE_TARGETS: StickerTarget[][] = [
+  [
+    { face: "F", index: 5, colour: "green" },
+    { face: "R", index: 3, colour: "red" },
+  ],
+  [
+    { face: "R", index: 5, colour: "red" },
+    { face: "B", index: 3, colour: "blue" },
+  ],
+  [
+    { face: "B", index: 5, colour: "blue" },
+    { face: "L", index: 3, colour: "orange" },
+  ],
+  [
+    { face: "L", index: 5, colour: "orange" },
+    { face: "F", index: 3, colour: "green" },
+  ],
+];
+
 export function isWhiteCrossSolved(cube: CubeState): boolean {
   return WHITE_CROSS_TARGETS.every((target) =>
     isWhiteCrossEdgeSolved(cube, target.sideFace),
@@ -83,6 +107,28 @@ export function isFirstLayerSolved(cube: CubeState): boolean {
   );
 }
 
+export function isMiddleLayerSolved(cube: CubeState): boolean {
+  return (
+    isFirstLayerSolved(cube) &&
+    MIDDLE_LAYER_EDGE_TARGETS.every((target) =>
+      isStickerTargetGroupSolved(cube, target),
+    )
+  );
+}
+
+export function isMiddleLayerEdgeSolved(
+  cube: CubeState,
+  edgeIndex: number,
+): boolean {
+  const target = MIDDLE_LAYER_EDGE_TARGETS[edgeIndex];
+
+  if (!target) {
+    throw new Error(`Middle layer edge target ${edgeIndex} does not exist`);
+  }
+
+  return isStickerTargetGroupSolved(cube, target);
+}
+
 export function isWhiteCornerSolved(cube: CubeState, cornerIndex: number): boolean {
   const target = WHITE_CORNER_TARGETS[cornerIndex];
 
@@ -117,4 +163,8 @@ export function getWhiteCrossStickerTargets(): StickerTarget[] {
       colour: target.sideColour,
     },
   ]);
+}
+
+export function getFirstLayerStickerTargets(): StickerTarget[] {
+  return FIRST_LAYER_TARGETS;
 }
