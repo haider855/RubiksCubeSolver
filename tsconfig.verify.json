@@ -11,5 +11,10 @@
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true
   },
-  "include": ["src/cube/**/*.ts", "src/validation/**/*.ts", "src/tests/**/*.ts"]
+  "include": [
+    "src/cube/**/*.ts",
+    "src/solver/**/*.ts",
+    "src/validation/**/*.ts",
+    "src/tests/**/*.ts"
+  ]
 }
