@@ -8,6 +8,7 @@ type CubeFaceProps = {
   stickers: FaceStickers;
   onStickerChange: (face: Face, index: number, colour: CubeColour) => void;
   selectedColour: CubeColour;
+  isReadOnly?: boolean;
 };
 
 export function CubeFace({
@@ -15,6 +16,7 @@ export function CubeFace({
   stickers,
   onStickerChange,
   selectedColour,
+  isReadOnly = false,
 }: CubeFaceProps) {
   return (
     <div className={`cube-face cube-face-${face.toLowerCase()}`}>
@@ -27,6 +29,7 @@ export function CubeFace({
             face={face}
             index={index}
             isCentre={index === FACE_CENTRE_INDEX}
+            isReadOnly={isReadOnly}
             onSelect={() => onStickerChange(face, index, selectedColour)}
           />
         ))}
