@@ -88,6 +88,29 @@ export const YELLOW_FACE_TARGETS: StickerTarget[] = [
   { face: "D", index: 4, colour: "yellow" },
 ];
 
+export const YELLOW_CORNER_POSITION_TARGETS: StickerTarget[][] = [
+  [
+    { face: "D", index: 0, colour: "yellow" },
+    { face: "F", index: 6, colour: "green" },
+    { face: "L", index: 8, colour: "orange" },
+  ],
+  [
+    { face: "D", index: 2, colour: "yellow" },
+    { face: "F", index: 8, colour: "green" },
+    { face: "R", index: 6, colour: "red" },
+  ],
+  [
+    { face: "D", index: 6, colour: "yellow" },
+    { face: "B", index: 8, colour: "blue" },
+    { face: "L", index: 6, colour: "orange" },
+  ],
+  [
+    { face: "D", index: 8, colour: "yellow" },
+    { face: "B", index: 6, colour: "blue" },
+    { face: "R", index: 8, colour: "red" },
+  ],
+];
+
 export type YellowCrossCase = "dot" | "l-shape" | "line" | "cross" | "invalid";
 export type YellowCornerOrientationCase =
   | "none"
@@ -95,6 +118,7 @@ export type YellowCornerOrientationCase =
   | "pair"
   | "oriented"
   | "invalid";
+export type YellowCornerPositionCase = "none" | "one" | "two" | "positioned" | "invalid";
 
 export function isWhiteCrossSolved(cube: CubeState): boolean {
   return WHITE_CROSS_TARGETS.every((target) =>
@@ -210,6 +234,51 @@ export function getYellowCornerOrientationCase(
       return "pair";
     case 4:
       return "oriented";
+    default:
+      return "invalid";
+  }
+}
+
+export function isYellowCornersPositioned(cube: CubeState): boolean {
+  return (
+    isYellowFaceOriented(cube) &&
+    YELLOW_CORNER_POSITION_TARGETS.every((target) =>
+      isStickerTargetGroupSolved(cube, target),
+    )
+  );
+}
+
+export function isYellowCornerPositioned(
+  cube: CubeState,
+  cornerIndex: number,
+): boolean {
+  const target = YELLOW_CORNER_POSITION_TARGETS[cornerIndex];
+
+  if (!target) {
+    throw new Error(`Yellow corner position target ${cornerIndex} does not exist`);
+  }
+
+  return isStickerTargetGroupSolved(cube, target);
+}
+
+export function countPositionedYellowCorners(cube: CubeState): number {
+  return YELLOW_CORNER_POSITION_TARGETS.filter((target) =>
+    isStickerTargetGroupSolved(cube, target),
+  ).length;
+}
+
+export function getYellowCornerPositionCase(
+  cube: CubeState,
+): YellowCornerPositionCase {
+  switch (countPositionedYellowCorners(cube)) {
+    case 0:
+      return "none";
+    case 1:
+      return "one";
+    case 2:
+      return "two";
+    case 4:
+      return "positioned";
     default:
       return "invalid";
   }
