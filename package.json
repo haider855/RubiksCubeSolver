@@ -15,7 +15,8 @@
     "verify:middle-layer": "tsc -p tsconfig.verify.json && node .verify-dist/tests/middleLayerVerification.js",
     "verify:yellow-cross": "tsc -p tsconfig.verify.json && node .verify-dist/tests/yellowCrossVerification.js",
     "verify:orient-yellow-corners": "tsc -p tsconfig.verify.json && node .verify-dist/tests/orientYellowCornersVerification.js",
-    "verify:position-yellow-corners": "tsc -p tsconfig.verify.json && node .verify-dist/tests/positionYellowCornersVerification.js"
+    "verify:position-yellow-corners": "tsc -p tsconfig.verify.json && node .verify-dist/tests/positionYellowCornersVerification.js",
+    "verify:position-yellow-edges": "tsc -p tsconfig.verify.json && node .verify-dist/tests/positionYellowEdgesVerification.js"
   },
   "dependencies": {
     "react": "^19.2.7",

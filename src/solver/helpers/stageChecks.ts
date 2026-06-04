@@ -111,6 +111,25 @@ export const YELLOW_CORNER_POSITION_TARGETS: StickerTarget[][] = [
   ],
 ];
 
+export const YELLOW_EDGE_POSITION_TARGETS: StickerTarget[][] = [
+  [
+    { face: "D", index: 1, colour: "yellow" },
+    { face: "F", index: 7, colour: "green" },
+  ],
+  [
+    { face: "D", index: 5, colour: "yellow" },
+    { face: "R", index: 7, colour: "red" },
+  ],
+  [
+    { face: "D", index: 7, colour: "yellow" },
+    { face: "B", index: 7, colour: "blue" },
+  ],
+  [
+    { face: "D", index: 3, colour: "yellow" },
+    { face: "L", index: 7, colour: "orange" },
+  ],
+];
+
 export type YellowCrossCase = "dot" | "l-shape" | "line" | "cross" | "invalid";
 export type YellowCornerOrientationCase =
   | "none"
@@ -119,6 +138,7 @@ export type YellowCornerOrientationCase =
   | "oriented"
   | "invalid";
 export type YellowCornerPositionCase = "none" | "one" | "two" | "positioned" | "invalid";
+export type YellowEdgePositionCase = "none" | "one" | "positioned" | "invalid";
 
 export function isWhiteCrossSolved(cube: CubeState): boolean {
   return WHITE_CROSS_TARGETS.every((target) =>
@@ -277,6 +297,47 @@ export function getYellowCornerPositionCase(
       return "one";
     case 2:
       return "two";
+    case 4:
+      return "positioned";
+    default:
+      return "invalid";
+  }
+}
+
+export function isYellowEdgesPositioned(cube: CubeState): boolean {
+  return (
+    isYellowCornersPositioned(cube) &&
+    YELLOW_EDGE_POSITION_TARGETS.every((target) =>
+      isStickerTargetGroupSolved(cube, target),
+    )
+  );
+}
+
+export function isYellowEdgePositioned(
+  cube: CubeState,
+  edgeIndex: number,
+): boolean {
+  const target = YELLOW_EDGE_POSITION_TARGETS[edgeIndex];
+
+  if (!target) {
+    throw new Error(`Yellow edge position target ${edgeIndex} does not exist`);
+  }
+
+  return isStickerTargetGroupSolved(cube, target);
+}
+
+export function countPositionedYellowEdges(cube: CubeState): number {
+  return YELLOW_EDGE_POSITION_TARGETS.filter((target) =>
+    isStickerTargetGroupSolved(cube, target),
+  ).length;
+}
+
+export function getYellowEdgePositionCase(cube: CubeState): YellowEdgePositionCase {
+  switch (countPositionedYellowEdges(cube)) {
+    case 0:
+      return "none";
+    case 1:
+      return "one";
     case 4:
       return "positioned";
     default:
