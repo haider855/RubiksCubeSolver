@@ -119,41 +119,43 @@ export function SolutionPanel({
         {totalMoves > 0 ? formatAlgorithm(result.moves) : "No moves"}
       </div>
 
-      <div className="stage-move-list" aria-label="Moves by stage">
-        {stageSummaries.map((stage) => (
-          <section className="stage-move-group" key={stage.stage}>
-            <div className="stage-move-heading">
-              <h3>{stage.label}</h3>
-              <span>{stage.moves.length} moves</span>
-            </div>
-            {stage.moves.length > 0 ? (
-              <div className="move-token-list">
-                {stage.moves.map((move, index) => {
-                  const moveIndex = stage.startMove + index;
-
-                  return (
-                    <button
-                      type="button"
-                      className={`move-token${
-                        currentMoveIndex === moveIndex ? " active" : ""
-                      }${currentMoveIndex > moveIndex ? " completed" : ""}`}
-                      key={`${stage.stage}-${moveIndex}`}
-                      onClick={() => onJumpToMove(moveIndex)}
-                    >
-                      {move}
-                    </button>
-                  );
-                })}
+      {stageSummaries.length > 0 ? (
+        <div className="stage-move-list" aria-label="Moves by stage">
+          {stageSummaries.map((stage) => (
+            <section className="stage-move-group" key={stage.stage}>
+              <div className="stage-move-heading">
+                <h3>{stage.label}</h3>
+                <span>{stage.moves.length} moves</span>
               </div>
-            ) : (
-              <p className="stage-empty">No moves.</p>
-            )}
-            {!stage.success && stage.message ? (
-              <p className="solution-error">{stage.message}</p>
-            ) : null}
-          </section>
-        ))}
-      </div>
+              {stage.moves.length > 0 ? (
+                <div className="move-token-list">
+                  {stage.moves.map((move, index) => {
+                    const moveIndex = stage.startMove + index;
+
+                    return (
+                      <button
+                        type="button"
+                        className={`move-token${
+                          currentMoveIndex === moveIndex ? " active" : ""
+                        }${currentMoveIndex > moveIndex ? " completed" : ""}`}
+                        key={`${stage.stage}-${moveIndex}`}
+                        onClick={() => onJumpToMove(moveIndex)}
+                      >
+                        {move}
+                      </button>
+                    );
+                  })}
+                </div>
+              ) : (
+                <p className="stage-empty">No moves.</p>
+              )}
+              {!stage.success && stage.message ? (
+                <p className="solution-error">{stage.message}</p>
+              ) : null}
+            </section>
+          ))}
+        </div>
+      ) : null}
     </section>
   );
 }

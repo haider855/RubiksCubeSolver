@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { ColourPalette } from "../components/ColourPalette.js";
 import { CubeNet } from "../components/CubeNet.js";
 import { SolutionPanel } from "../components/SolutionPanel.js";
@@ -6,9 +6,15 @@ import { ValidationPanel } from "../components/ValidationPanel.js";
 import { CUBE_COLOURS, FACE_CENTRE_INDEX, FACE_ORDER } from "../cube/constants.js";
 import { applyMove, cloneCube, createSolvedCube } from "../cube/index.js";
 import type { CubeColour, CubeState, Face, Move } from "../cube/index.js";
-import { solveCube } from "../solver/index.js";
 import type { FullSolverResult } from "../solver/index.js";
+import type {
+  SolveCubeWorkerRequest,
+  SolveCubeWorkerResponse,
+} from "../solver/solveCubeWorkerTypes.js";
 import { validateBasicCube } from "../validation/index.js";
+
+const SOLVER_TIMEOUT_MS = 8_000;
+let nextSolveRequestId = 0;
 
 function countColours(cube: CubeState): Record<CubeColour, number> {
   const counts = Object.fromEntries(
@@ -36,6 +42,81 @@ function createPlaybackStates(initialCube: CubeState, moves: Move[]): CubeState[
   return states;
 }
 
+function solveCubeInWorker(cube: CubeState): Promise<FullSolverResult> {
+  if (typeof Worker === "undefined") {
+    return Promise.resolve(
+      createSolverFailureResult(
+        cube,
+        "Solver workers are not available in this browser.",
+      ),
+    );
+  }
+
+  return new Promise((resolve) => {
+    const requestId = nextSolveRequestId + 1;
+    nextSolveRequestId = requestId;
+    const worker = new Worker(
+      new URL("../solver/solveCubeWorker.ts", import.meta.url),
+      { type: "module" },
+    );
+    const timeoutId = window.setTimeout(() => {
+      finish(
+        createSolverFailureResult(
+          cube,
+          "Solver timed out for this cube state. Check the stickers and try again.",
+        ),
+      );
+    }, SOLVER_TIMEOUT_MS);
+    let isSettled = false;
+
+    function finish(result: FullSolverResult): void {
+      if (isSettled) {
+        return;
+      }
+
+      isSettled = true;
+      window.clearTimeout(timeoutId);
+      worker.terminate();
+      resolve(result);
+    }
+
+    worker.addEventListener(
+      "message",
+      (event: MessageEvent<SolveCubeWorkerResponse>) => {
+        if (event.data.id !== requestId) {
+          return;
+        }
+
+        if ("result" in event.data) {
+          finish(event.data.result);
+          return;
+        }
+
+        finish(createSolverFailureResult(cube, event.data.error));
+      },
+    );
+
+    worker.addEventListener("error", () => {
+      finish(createSolverFailureResult(cube, "Solver worker failed to complete."));
+    });
+
+    worker.postMessage({
+      id: requestId,
+      cube,
+    } satisfies SolveCubeWorkerRequest);
+  });
+}
+
+function createSolverFailureResult(cube: CubeState, error: string): FullSolverResult {
+  return {
+    success: false,
+    moves: [],
+    cubeAfterSolve: cloneCube(cube),
+    stages: [],
+    error,
+  };
+}
+
 export default function App() {
   const [cube, setCube] = useState<CubeState>(() => createSolvedCube());
   const [selectedColour, setSelectedColour] = useState<CubeColour>("white");
@@ -44,6 +125,8 @@ export default function App() {
     null,
   );
   const [currentMoveIndex, setCurrentMoveIndex] = useState(0);
+  const [isSolving, setIsSolving] = useState(false);
+  const activeSolveId = useRef(0);
   const colourCounts = useMemo(() => countColours(cube), [cube]);
   const validationResult = useMemo(() => validateBasicCube(cube), [cube]);
   const playbackStates = useMemo(() => {
@@ -64,7 +147,7 @@ export default function App() {
     index: number,
     colour: CubeColour,
   ): void {
-    if (index === FACE_CENTRE_INDEX) {
+    if (isSolving || index === FACE_CENTRE_INDEX) {
       return;
     }
 
@@ -77,18 +160,33 @@ export default function App() {
   }
 
   function clearSolution(): void {
+    activeSolveId.current += 1;
+    setIsSolving(false);
     setSolverResult(null);
     setPlaybackInitialCube(null);
     setCurrentMoveIndex(0);
   }
 
-  function handleSolve(): void {
+  async function handleSolve(): Promise<void> {
     const initialCube = cloneCube(cube);
-    const result = solveCube(initialCube);
+    const solveId = activeSolveId.current + 1;
+
+    activeSolveId.current = solveId;
+    setIsSolving(true);
+    setSolverResult(null);
+    setPlaybackInitialCube(initialCube);
+    setCurrentMoveIndex(0);
+
+    const result = await solveCubeInWorker(initialCube);
+
+    if (activeSolveId.current !== solveId) {
+      return;
+    }
 
     setSolverResult(result);
     setPlaybackInitialCube(initialCube);
     setCurrentMoveIndex(0);
+    setIsSolving(false);
   }
 
   function goToPreviousMove(): void {
@@ -140,10 +238,10 @@ export default function App() {
           <button
             type="button"
             className="primary-action"
-            disabled={!validationResult.isValid}
+            disabled={isSolving || !validationResult.isValid}
             onClick={handleSolve}
           >
-            Solve
+            {isSolving ? "Solving..." : "Solve"}
           </button>
         </div>
       </header>
@@ -163,8 +261,14 @@ export default function App() {
             cube={displayedCube}
             selectedColour={selectedColour}
             onStickerChange={handleStickerChange}
-            ariaLabel={hasPlayback ? "Playback cube state" : "Cube input net"}
-            isReadOnly={hasPlayback}
+            ariaLabel={
+              hasPlayback
+                ? "Playback cube state"
+                : isSolving
+                  ? "Solving cube state"
+                  : "Cube input net"
+            }
+            isReadOnly={hasPlayback || isSolving}
           />
         </section>
 
