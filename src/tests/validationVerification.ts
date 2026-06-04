@@ -1,5 +1,5 @@
 import { applyMove, cloneCube, createSolvedCube } from "../cube/index.js";
-import { validateBasicCube } from "../validation/index.js";
+import { validateCube } from "../validation/index.js";
 import type { CubeState } from "../cube/index.js";
 import type { ValidationIssueCode } from "../validation/index.js";
 
@@ -10,7 +10,7 @@ function assert(condition: boolean, message: string): void {
 }
 
 function assertValid(cube: unknown, message: string): void {
-  const result = validateBasicCube(cube);
+  const result = validateCube(cube);
 
   assert(
     result.isValid,
@@ -25,7 +25,7 @@ function assertInvalid(
   expectedCode: ValidationIssueCode,
   message: string,
 ): void {
-  const result = validateBasicCube(cube);
+  const result = validateCube(cube);
 
   assert(!result.isValid, `${message}: expected invalid cube`);
   assert(
@@ -34,6 +34,16 @@ function assertInvalid(
       .map((issue) => issue.code)
       .join(", ")}`,
   );
+}
+
+function assertInvalidWithCodes(
+  cube: unknown,
+  expectedCodes: ValidationIssueCode[],
+  message: string,
+): void {
+  for (const expectedCode of expectedCodes) {
+    assertInvalid(cube, expectedCode, message);
+  }
 }
 
 function verifySolvedCubeIsValid(): void {
@@ -103,6 +113,60 @@ function verifyCentres(): void {
   );
 }
 
+function verifyImpossibleEdgePiece(): void {
+  const cube = cloneCube(createSolvedCube());
+  const originalUpBackSticker = cube.U[1];
+
+  cube.U[1] = cube.F[1];
+  cube.F[1] = originalUpBackSticker;
+
+  assertInvalidWithCodes(
+    cube,
+    ["impossible-edge-piece", "missing-edge-piece"],
+    "Impossible edge colour pair should fail",
+  );
+}
+
+function verifyDuplicateEdgePiece(): void {
+  const cube = cloneCube(createSolvedCube());
+
+  cube.D[1] = "white";
+  cube.U[5] = "yellow";
+
+  assertInvalidWithCodes(
+    cube,
+    ["duplicate-edge-piece", "missing-edge-piece"],
+    "Duplicate edge pieces should fail",
+  );
+}
+
+function verifyImpossibleCornerPiece(): void {
+  const cube = cloneCube(createSolvedCube());
+  const originalUpperCornerSticker = cube.U[8];
+
+  cube.U[8] = cube.R[1];
+  cube.R[1] = originalUpperCornerSticker;
+
+  assertInvalidWithCodes(
+    cube,
+    ["impossible-corner-piece", "missing-corner-piece"],
+    "Impossible corner colour triple should fail",
+  );
+}
+
+function verifyDuplicateCornerPiece(): void {
+  const cube = cloneCube(createSolvedCube());
+
+  cube.D[2] = "white";
+  cube.U[2] = "yellow";
+
+  assertInvalidWithCodes(
+    cube,
+    ["duplicate-corner-piece", "missing-corner-piece"],
+    "Duplicate corner pieces should fail",
+  );
+}
+
 const verificationSteps: Array<[string, () => void]> = [
   ["solved cube is valid", verifySolvedCubeIsValid],
   ["moved cube is valid", verifyMovedCubeIsValid],
@@ -110,6 +174,10 @@ const verificationSteps: Array<[string, () => void]> = [
   ["colour counts", verifyColourCounts],
   ["invalid sticker colours", verifyInvalidStickerColours],
   ["centres", verifyCentres],
+  ["impossible edge piece", verifyImpossibleEdgePiece],
+  ["duplicate edge piece", verifyDuplicateEdgePiece],
+  ["impossible corner piece", verifyImpossibleCornerPiece],
+  ["duplicate corner piece", verifyDuplicateCornerPiece],
 ];
 
 for (const [name, verify] of verificationSteps) {
@@ -117,4 +185,4 @@ for (const [name, verify] of verificationSteps) {
   console.log(`ok - ${name}`);
 }
 
-console.log("Basic validation verification passed");
+console.log("Full validation verification passed");

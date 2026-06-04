@@ -11,7 +11,7 @@ import type {
   SolveCubeWorkerRequest,
   SolveCubeWorkerResponse,
 } from "../solver/solveCubeWorkerTypes.js";
-import { validateBasicCube } from "../validation/index.js";
+import { validateCube } from "../validation/index.js";
 
 const SOLVER_TIMEOUT_MS = 8_000;
 let nextSolveRequestId = 0;
@@ -128,7 +128,7 @@ export default function App() {
   const [isSolving, setIsSolving] = useState(false);
   const activeSolveId = useRef(0);
   const colourCounts = useMemo(() => countColours(cube), [cube]);
-  const validationResult = useMemo(() => validateBasicCube(cube), [cube]);
+  const validationResult = useMemo(() => validateCube(cube), [cube]);
   const playbackStates = useMemo(() => {
     if (!playbackInitialCube || !solverResult) {
       return [];

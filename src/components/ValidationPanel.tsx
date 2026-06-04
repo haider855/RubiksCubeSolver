@@ -16,7 +16,7 @@ export function ValidationPanel({ result }: ValidationPanelProps) {
       </div>
 
       {result.isValid ? (
-        <p>Basic validation passed.</p>
+        <p>Cube validation passed.</p>
       ) : (
         <ul className="issue-list">
           {result.issues.map((issue) => (
