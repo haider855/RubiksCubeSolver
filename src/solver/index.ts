@@ -1,5 +1,6 @@
 export type * from "./solverTypes.js";
 export * from "./helpers/stageChecks.js";
+export * from "./solveCube.js";
 export * from "./stages/orientYellowCorners.js";
 export * from "./stages/positionYellowCorners.js";
 export * from "./stages/positionYellowEdges.js";

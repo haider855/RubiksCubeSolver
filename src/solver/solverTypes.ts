@@ -16,3 +16,11 @@ export type SolverStageResult = {
   success: boolean;
   message?: string;
 };
+
+export type FullSolverResult = {
+  success: boolean;
+  moves: Move[];
+  cubeAfterSolve: CubeState;
+  stages: SolverStageResult[];
+  error?: string;
+};
