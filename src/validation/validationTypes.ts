@@ -6,7 +6,13 @@ export type ValidationIssueCode =
   | "invalid-face-stickers"
   | "invalid-sticker-colour"
   | "invalid-colour-count"
-  | "invalid-centre";
+  | "invalid-centre"
+  | "missing-edge-piece"
+  | "duplicate-edge-piece"
+  | "impossible-edge-piece"
+  | "missing-corner-piece"
+  | "duplicate-corner-piece"
+  | "impossible-corner-piece";
 
 export type ValidationIssue = {
   code: ValidationIssueCode;
