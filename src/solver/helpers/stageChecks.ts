@@ -75,7 +75,26 @@ export const YELLOW_CROSS_TARGETS: StickerTarget[] = [
   { face: "D", index: 7, colour: "yellow" },
 ];
 
+export const YELLOW_CORNER_TARGETS: StickerTarget[] = [
+  { face: "D", index: 0, colour: "yellow" },
+  { face: "D", index: 2, colour: "yellow" },
+  { face: "D", index: 6, colour: "yellow" },
+  { face: "D", index: 8, colour: "yellow" },
+];
+
+export const YELLOW_FACE_TARGETS: StickerTarget[] = [
+  ...YELLOW_CORNER_TARGETS,
+  ...YELLOW_CROSS_TARGETS,
+  { face: "D", index: 4, colour: "yellow" },
+];
+
 export type YellowCrossCase = "dot" | "l-shape" | "line" | "cross" | "invalid";
+export type YellowCornerOrientationCase =
+  | "none"
+  | "single"
+  | "pair"
+  | "oriented"
+  | "invalid";
 
 export function isWhiteCrossSolved(cube: CubeState): boolean {
   return WHITE_CROSS_TARGETS.every((target) =>
@@ -166,6 +185,34 @@ export function getYellowCrossCase(cube: CubeState): YellowCrossCase {
   }
 
   return "invalid";
+}
+
+export function isYellowFaceOriented(cube: CubeState): boolean {
+  return (
+    isYellowCrossSolved(cube) &&
+    isStickerTargetGroupSolved(cube, YELLOW_FACE_TARGETS)
+  );
+}
+
+export function getYellowCornerOrientationCase(
+  cube: CubeState,
+): YellowCornerOrientationCase {
+  const yellowCornerCount = YELLOW_CORNER_TARGETS.filter(
+    (target) => cube[target.face][target.index] === target.colour,
+  ).length;
+
+  switch (yellowCornerCount) {
+    case 0:
+      return "none";
+    case 1:
+      return "single";
+    case 2:
+      return "pair";
+    case 4:
+      return "oriented";
+    default:
+      return "invalid";
+  }
 }
 
 export function isWhiteCornerSolved(cube: CubeState, cornerIndex: number): boolean {
