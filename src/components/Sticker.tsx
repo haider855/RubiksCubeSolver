@@ -8,6 +8,7 @@ type StickerProps = {
   index: number;
   isCentre: boolean;
   onSelect: () => void;
+  isReadOnly?: boolean;
 };
 
 export function Sticker({
@@ -16,16 +17,19 @@ export function Sticker({
   index,
   isCentre,
   onSelect,
+  isReadOnly = false,
 }: StickerProps) {
   return (
     <button
       type="button"
-      className="sticker"
+      className={`sticker${isCentre ? " centre" : ""}${
+        isReadOnly ? " read-only" : ""
+      }`}
       style={{ "--sticker-colour": COLOUR_SWATCHES[colour] } as CSSProperties}
       aria-label={`${FACE_LABELS[face]} sticker ${index + 1}: ${COLOUR_LABELS[colour]}${
         isCentre ? " fixed centre" : ""
       }`}
-      disabled={isCentre}
+      disabled={isCentre || isReadOnly}
       onClick={onSelect}
     />
   );

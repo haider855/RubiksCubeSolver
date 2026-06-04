@@ -7,11 +7,19 @@ type CubeNetProps = {
   cube: CubeState;
   onStickerChange: (face: Face, index: number, colour: CubeColour) => void;
   selectedColour: CubeColour;
+  ariaLabel?: string;
+  isReadOnly?: boolean;
 };
 
-export function CubeNet({ cube, onStickerChange, selectedColour }: CubeNetProps) {
+export function CubeNet({
+  cube,
+  onStickerChange,
+  selectedColour,
+  ariaLabel = "Cube net",
+  isReadOnly = false,
+}: CubeNetProps) {
   return (
-    <div className="cube-net" aria-label="Cube net">
+    <div className="cube-net" aria-label={ariaLabel}>
       {NET_FACE_ORDER.map((face) => (
         <CubeFace
           key={face}
@@ -19,6 +27,7 @@ export function CubeNet({ cube, onStickerChange, selectedColour }: CubeNetProps)
           stickers={cube[face]}
           selectedColour={selectedColour}
           onStickerChange={onStickerChange}
+          isReadOnly={isReadOnly}
         />
       ))}
     </div>
