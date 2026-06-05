@@ -160,6 +160,88 @@ h2 {
   overflow-x: auto;
 }
 
+.three-cube-viewer {
+  position: relative;
+  height: clamp(280px, 38vw, 420px);
+  margin-bottom: 18px;
+  overflow: hidden;
+  border: 1px solid #d8e1ec;
+  border-radius: 8px;
+  background: #eef3f8;
+}
+
+.three-cube-canvas {
+  width: 100%;
+  height: 100%;
+}
+
+.three-cube-canvas canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.three-cube-controls {
+  position: absolute;
+  right: 14px;
+  bottom: 14px;
+  display: grid;
+  grid-template-columns: repeat(3, 38px);
+  grid-template-rows: repeat(3, 38px);
+  gap: 6px;
+}
+
+.three-cube-control {
+  display: grid;
+  min-width: 38px;
+  min-height: 38px;
+  place-items: center;
+  border: 1px solid #b9c5d4;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.92);
+  color: #263548;
+  cursor: pointer;
+  font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+  font-size: 1rem;
+  font-weight: 800;
+  line-height: 1;
+  box-shadow: 0 10px 24px rgba(28, 36, 48, 0.12);
+}
+
+.three-cube-control:hover {
+  background: #ffffff;
+}
+
+.three-cube-control-up {
+  grid-column: 2;
+  grid-row: 1;
+}
+
+.three-cube-control-left {
+  grid-column: 1;
+  grid-row: 2;
+}
+
+.three-cube-control-right {
+  grid-column: 3;
+  grid-row: 2;
+}
+
+.three-cube-control-down {
+  grid-column: 2;
+  grid-row: 3;
+}
+
+.three-cube-status {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  color: #607086;
+  font-size: 0.92rem;
+  font-weight: 700;
+}
+
 .cube-face {
   display: flex;
   width: var(--face-size);
@@ -248,6 +330,7 @@ h2 {
 .palette-option:focus-visible,
 .primary-action:focus-visible,
 .secondary-action:focus-visible,
+.three-cube-control:focus-visible,
 .playback-button:focus-visible,
 .move-token:focus-visible {
   outline: 3px solid #38bdf8;
