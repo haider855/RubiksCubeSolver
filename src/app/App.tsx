@@ -2,6 +2,7 @@ import { useMemo, useRef, useState } from "react";
 import { ColourPalette } from "../components/ColourPalette.js";
 import { CubeNet } from "../components/CubeNet.js";
 import { SolutionPanel } from "../components/SolutionPanel.js";
+import { ThreeCubeViewer } from "../components/ThreeCubeViewer.js";
 import { ValidationPanel } from "../components/ValidationPanel.js";
 import { CUBE_COLOURS, FACE_CENTRE_INDEX, FACE_ORDER } from "../cube/constants.js";
 import { applyMove, cloneCube, createSolvedCube } from "../cube/index.js";
@@ -256,6 +257,12 @@ export default function App() {
                 : `${FACE_ORDER.length * 9} / 54 stickers assigned`}
             </span>
           </div>
+
+          <ThreeCubeViewer
+            baseCube={playbackInitialCube ?? cube}
+            currentMoveIndex={solverResult ? currentMoveIndex : 0}
+            moves={solverResult?.moves ?? []}
+          />
 
           <CubeNet
             cube={displayedCube}
