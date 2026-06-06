@@ -70,7 +70,7 @@ type MoveAnimation = {
 
 type ViewDirection = "left" | "right" | "up" | "down";
 
-const MODEL_URL = "/models/rubiks_cube.glb";
+const MODEL_URL = `${import.meta.env.BASE_URL}models/rubiks_cube.glb`;
 const CUBE_MODEL_SCALE = 0.012;
 const CUBIE_STEP = 75.65;
 const MOVE_DURATION_MS = 420;

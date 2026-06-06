@@ -7,7 +7,7 @@ import type { CubeColour, CubeState, Face, Move } from "../../cube/index.js";
 import { COLOUR_SWATCHES } from "../cubeDisplay.js";
 import { getModelAnimationName } from "./animationMap.js";
 
-const MODEL_URL = "/models/rubiks_cube.glb";
+const MODEL_URL = `${import.meta.env.BASE_URL}models/rubiks_cube.glb`;
 const MODEL_SCALE = 0.012;
 const CUBIE_STEP = 75.65;
 const MOVE_DURATION_MS = 420;
