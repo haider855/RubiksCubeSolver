@@ -10,7 +10,7 @@ Users can select sticker colours, click stickers on the cube, run the solver, an
 
 ## Live Demo
 
-Coming soon.
+(https://haider855.github.io/RubiksCubeSolver/)
 
 ## Why I Built It
 
